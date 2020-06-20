@@ -1,33 +1,94 @@
 import React, { Component } from 'react';
+import { View, Platform } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+
 import Menu from './MenuComponent';
-import { DISHES } from '../shared/dishes';
 import DishDetail from './DishDetailComponent';
-import { View } from 'react-native';
+import Home from './HomeComponent';
 
-class Main extends Component {
-    constructor(props){
-        super(props);
-        this.state = {
-            dishes: DISHES,
-            selectedDish: null
-        }
-    }
+const MenuNavigator = createStackNavigator();
 
-    onDishSelect(dishId) {
-        this.setState({
-            selectedDish: dishId
-        })
-    }
-
-    render() {
-        return(
-            <View>
-                <Menu dishes={this.state.dishes}
-                        onPress={(dishId) => this.onDishSelect(dishId)} />
-                <DishDetail dish={this.state.dishes.filter((dish) => dish.id === this.state.selectedDish)[0]} />
-            </View>
-        )
-    }
+function MenuNavigatorScreen() {
+    return(
+        <MenuNavigator.Navigator
+            initialRouteName='Menu'
+            screenOptions={{
+                headerStyle: {
+                    backgroundColor: "#512DA8"
+                },
+                headerTintColor: "#fff",
+                headerTitleStyle: {
+                    color: "#fff"            
+                }
+            }}
+        >
+            <MenuNavigator.Screen
+                name="Menu"
+                component={Menu}
+            />
+            <MenuNavigator.Screen
+                name="DishDetail"
+                component={DishDetail}
+                options={{ headerTitle: "Dish Detail"}}
+            />            
+        </MenuNavigator.Navigator>
+    );
 }
 
+const HomeNavigator = createStackNavigator();
+
+function HomeNavigatorScreen() {
+    return(
+        <MenuNavigator.Navigator
+            initialRouteName='Home'
+            screenOptions={{
+                headerStyle: {
+                    backgroundColor: "#512DA8"
+                },
+                headerTintColor: "#fff",
+                headerTitleStyle: {
+                    color: "#fff"            
+                }
+            }}
+        >
+            <MenuNavigator.Screen
+                name="Home"
+                component={Home}
+            />
+           
+        </MenuNavigator.Navigator>
+    );
+}
+
+const MainNavigator = createDrawerNavigator();
+
+function MainNavigatorDrawer() {
+    return(
+        <MainNavigator.Navigator 
+            initialRouteName="Home"
+            drawerStyle={{
+                backgroundColor:'#D1C4E9'
+            }}
+        >
+            <MainNavigator.Screen name="Home" component={HomeNavigatorScreen} />
+            <MainNavigator.Screen name="Menu" component={MenuNavigatorScreen} />
+        </MainNavigator.Navigator>
+    );
+}
+
+
+class Main extends Component {
+
+  render() {
+ 
+    return (
+        <NavigationContainer>
+            <MainNavigatorDrawer/>           
+        </NavigationContainer>
+    );
+  }
+}
+  
 export default Main;
