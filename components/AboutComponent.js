@@ -1,16 +1,18 @@
 import React from 'react';
 import { Card, Text, ListItem } from 'react-native-elements';
 import { StyleSheet, ScrollView, FlatList, View } from 'react-native';
-import { LEADERS } from '../shared/leaders';
+import { connect } from 'react-redux';
+import { baseUrl } from '../shared/baseUrl';
+import { Loading } from './LoadingComponent';
+
+const mapStateToProps = state => {
+    return {
+        leaders: state.leaders
+    }
+}
 
 class About extends React.Component {
 
-    constructor(props){
-        super(props);
-        this.state = {
-            leaders: LEADERS
-        }
-    }
 
 
     render() {
@@ -40,30 +42,54 @@ class About extends React.Component {
                     title={item.name}
                     subtitle={item.description}
                     hideChevron={true}
-                    leftAvatar={{source: require('./images/alberto.png')}}
+                    leftAvatar={{source: { uri: baseUrl + item.image}}}
                     />
             )
-        }
-        const RenderLeaders = () => {
+        };
+        if(this.props.leaders.isLoading) {
             return(
+                <FlatList 
+                ListHeaderComponent = {
+                    <History />
+                }
+                ListFooterComponent = {
                     <Card title="Corporate Leadership">
-                        <FlatList
-                            data={this.state.leaders}
-                            renderItem={RenderLeader}
-                            keyExtractor={item => item.id.toString()}
-                        >
-
-                        </FlatList>
+                        <Loading />
                     </Card>
-            )
+                } />
+            );
+        }else if(this.props.leaders.errMess){
+            return(
+                <FlatList 
+                ListHeaderComponent = {
+                    <History />
+                }
+                ListFooterComponent = {
+                    <Card title="Corporate Leadership">
+                        <Text>{this.props.leaders.errMess}</Text>
+                    </Card>
+                } />
+            );
+        }else{
+            return(
+                <FlatList 
+                    ListHeaderComponent = {
+                        <History />
+                    }
+                    ListFooterComponent = {
+                        <Card title="Corporate Leadership">
+                            <FlatList
+                                data={this.props.leaders.leaders}
+                                renderItem={RenderLeader}
+                                keyExtractor={item => item.id.toString()} />
+                        </Card>
+                    }   
+                    style={styles.background}   
+                />
+    
+            ) 
         }
-        return(
-            <ScrollView style={styles.background}>
-                <History />
-                <RenderLeaders />
-            </ScrollView>
 
-        ) 
     }
 }
 
@@ -78,4 +104,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default About;
+export default connect(mapStateToProps)(About);
