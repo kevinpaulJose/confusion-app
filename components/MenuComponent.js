@@ -40,6 +40,7 @@ class Menu extends React.Component {
         if(this.props.dishes.isLoading){
             return(
                 <Loading />
+
             );
         }else if(this.props.dishes.errMess){
             return(

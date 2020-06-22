@@ -15,6 +15,7 @@ import About from './AboutComponent';
 
 import { fetchDishes, fetchComments, fetchLeaders, fetchPromos } from '../redux/ActionCreators';
 import { connect } from 'react-redux';
+import Reservation from './ReservationComponent';
 
 
 const mapStateToProps = state => {
@@ -92,6 +93,35 @@ function HomeNavigatorScreen({navigation}) {
             />
            
         </MenuNavigator.Navigator>
+    );
+}
+
+const ReservationNavigator = createStackNavigator();
+function ReservationNavigatorScreen({navigation}) {
+    return(
+        <ReservationNavigator.Navigator
+            initialRouteName='Reservation'
+            screenOptions={{
+                headerStyle: {
+                    backgroundColor: "#512DA8"
+                },
+                headerTintColor: "#fff",
+                headerTitleStyle: {
+                    color: "#fff"            
+                }
+            }}
+        >
+            <ReservationNavigator.Screen
+                name="Reservation"
+                component={Reservation}
+                options={{headerTitle: "Reserve a Table",
+                            headerLeft: () => (
+                                <Icon name='menu' size={24} color='white' style={{marginLeft: 10}} 
+                                onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())} />
+                                )}}
+            />
+           
+        </ReservationNavigator.Navigator>
     );
 }
 
@@ -208,6 +238,13 @@ function MainNavigatorDrawer() {
                     options={{
                         drawerIcon: ({ tintColor }) => (
                             <Icon name='address-card' size={22} type='font-awesome' color={tintColor} />
+                        )
+                    }} />
+            <MainNavigator.Screen name="Reserve Table" 
+                    component={ReservationNavigatorScreen}
+                    options={{
+                        drawerIcon: ({ tintColor }) => (
+                            <Icon name='cutlery' size={24} type='font-awesome' color={tintColor} />
                         )
                     }} />
 

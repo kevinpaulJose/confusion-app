@@ -19,7 +19,7 @@ function Renderitem(props) {
 
     if(props.isLoading) {
         return (
-            <Loading />
+               <Loading />
         )
     }else if(props.errMess){
         return(
