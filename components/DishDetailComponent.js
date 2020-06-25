@@ -55,8 +55,17 @@ class RenderDish extends React.Component {
 
 
         const recogonizeDrag = ({moveX, moveY, dx, dy}) => {
-            if(dx < -100)
+            if(dx < -200)
                 return true;
+            else
+                return false;
+        };
+        const recognizeComment = ({moveX, moveY, dx, dy}) => {
+            if(dx > +200){
+                console.log("Right Drag")
+                return true;
+
+            }
             else
                 return false;
         };
@@ -66,7 +75,7 @@ class RenderDish extends React.Component {
             },
             onPanResponderGrant: () => {
                 this.view.rubberBand(2000)
-                    .then(endState => console.log(endState.finished ? 'finished': 'Not finished'));
+                    .then(endState => console.log());
             },
             onPanResponderEnd: (e, gestureState) => {
                 if (recogonizeDrag(gestureState))
@@ -86,6 +95,10 @@ class RenderDish extends React.Component {
                         ],
                         {cancelable: false}
                     )
+                if(recognizeComment(gestureState)){
+                    console.log("executed");
+                    this.setState({showModal: true})
+                }
                 return true;
             }
         });

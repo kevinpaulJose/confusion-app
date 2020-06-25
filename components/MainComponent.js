@@ -17,6 +17,7 @@ import { fetchDishes, fetchComments, fetchLeaders, fetchPromos } from '../redux/
 import { connect } from 'react-redux';
 import Reservation from './ReservationComponent';
 import Favorites from './FavoriteComponent';
+import Login from './LoginComponent';
 
 
 const mapStateToProps = state => {
@@ -220,6 +221,36 @@ function FavoriteNavigatorScreens({navigation}) {
     );
 }
 
+const LoginNavigator = createStackNavigator();
+function LoginNavigatorScreens({navigation}) {
+    return(
+        <LoginNavigator.Navigator
+            initialRouteName='Login'
+            screenOptions={{
+                headerStyle: {
+                    backgroundColor: "#512DA8"
+                },
+                headerTintColor: "#fff",
+                headerTitleStyle: {
+                    color: "#fff"            
+                }
+            }}
+        >
+            <LoginNavigator.Screen
+                name="Login"
+                component={Login}
+                options={{headerTitle: "Login Details",
+                        headerLeft: () => (
+                            <Icon name='menu' size={24} color='white' style={{marginLeft: 10}} 
+                            onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())} />
+                            )
+                }}
+            />
+           
+        </LoginNavigator.Navigator>
+    );
+}
+
 const CustomDrawerContentComponent = (props) => (
     <ScrollView>
         {/* <SafeAreaView style={styles.container} forceInsert={{ top: 'always', horizontal: 'never'}}> */}
@@ -248,6 +279,13 @@ function MainNavigatorDrawer() {
                 
             }}
         >
+            <MainNavigator.Screen name="Login" 
+                    component={LoginNavigatorScreens}
+                    options={{
+                        drawerIcon: ({ tintColor }) => (
+                            <Icon name='user' size={24} type='font-awesome' color={tintColor} />
+                    )
+                }} />
             <MainNavigator.Screen name="Home"
                 component={HomeNavigatorScreen}
                 options={{
