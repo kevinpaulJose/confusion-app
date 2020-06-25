@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, ScrollView, FlatList, Modal, StyleSheet, Button } from 'react-native';
+import { View, Text, ScrollView, FlatList, Modal, StyleSheet, Button, Alert, PanResponder } from 'react-native';
 import { Card, Icon, Input } from 'react-native-elements';
 import { baseUrl } from '../shared/baseUrl';
 import { connect } from 'react-redux';
@@ -47,8 +47,48 @@ class RenderDish extends React.Component {
         })
     }
 
+    handleViewRef = ref => this.view =ref;
+
     render(){
         const dish = this.props.dish;
+
+
+
+        const recogonizeDrag = ({moveX, moveY, dx, dy}) => {
+            if(dx < -100)
+                return true;
+            else
+                return false;
+        };
+        const panResponder = PanResponder.create({
+            onStartShouldSetPanResponder: (e, gestureState) => {
+                return true;
+            },
+            onPanResponderGrant: () => {
+                this.view.rubberBand(2000)
+                    .then(endState => console.log(endState.finished ? 'finished': 'Not finished'));
+            },
+            onPanResponderEnd: (e, gestureState) => {
+                if (recogonizeDrag(gestureState))
+                    Alert.alert(
+                        'Add to facavorites',
+                        'Are you wish to add '+dish.name+' to favorites',
+                        [
+                            {
+                                text: 'Cancel',
+                                onPress: () => console.log('Cancel Pressed'),
+                                style: 'cancel'
+                            },
+                            {
+                                text: 'OK',
+                                onPress: () => this.props.favorite ? alert('Already Fav') : this.props.onPress()
+                            }
+                        ],
+                        {cancelable: false}
+                    )
+                return true;
+            }
+        });
         const RenderModal = () => {
             return(
                 <Modal
@@ -97,7 +137,9 @@ class RenderDish extends React.Component {
         }
         if(dish != null) {
             return(
-                <Animatable.View animation='fadeInDown' duration={500} delay={100}>
+                <Animatable.View animation='fadeInDown' duration={500} delay={100}
+                                ref={this.handleViewRef}
+                                {...panResponder.panHandlers}>
                     <Card
                         featuredTitle={dish.name}
                         image={{uri: baseUrl + dish.image}}
