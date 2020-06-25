@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import { Loading } from './LoadingComponent';
 import { deleteFavorite } from '../redux/ActionCreators';
 import Swipeout from 'react-native-swipeout';
+import * as Animatable from 'react-native-animatable';
 
 
 const mapStateToProps = state => {
@@ -35,20 +36,22 @@ class Favorites extends React.Component {
                                 {text: 'Cancel', onPress: () => console.log(item.name+ ' Not Deleted'), style: 'cancel'},
                                 {text: 'Ok', onPress: () => this.props.deleteFavorite(item.id)}
                             ],
-                            {cencelable: false}
+                            {cancelable: false}
                         )
                     }
                 }
             ];
             return(
                 <Swipeout right={rightButton} autoClose={true} close={true}>
-                    <ListItem
-                        key={index}
-                        title={item.name}
-                        subtitle={item.description}
-                        hideChevron={true}
-                        onPress={() => navigate('DishDetail', {dishId: item.id})}
-                        leftAvatar={{source: {uri: baseUrl + item.image}}} />
+                    <Animatable.View animation='fadeInRightBig' duration={500} delay={300}>
+                        <ListItem
+                            key={index}
+                            title={item.name}
+                            subtitle={item.description}
+                            hideChevron={true}
+                            onPress={() => navigate('DishDetail', {dishId: item.id})}
+                            leftAvatar={{source: {uri: baseUrl + item.image}}} />
+                    </Animatable.View>
                 </Swipeout>
             );
         }

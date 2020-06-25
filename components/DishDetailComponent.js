@@ -7,6 +7,7 @@ import { postFavorite } from '../redux/ActionCreators';
 import { Rating, AirbnbRating } from 'react-native-elements';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { postComment } from '../redux/ActionCreators';
+import * as Animatable from 'react-native-animatable';
 
 
 const mapStateToProps = state => {
@@ -48,80 +49,87 @@ class RenderDish extends React.Component {
 
     render(){
         const dish = this.props.dish;
+        const RenderModal = () => {
+            return(
+                <Modal
+                    animationType={'slide'}
+                    presentationStyle="fullScreen"
+                    visible={this.state.showModal}
+                    onDismiss={() => {this.setState({showModal: false})}}
+                    onRequestClose={() => {this.setState({showModal: false})}} >
+                        <View style={styles.modal}>
+                            <Rating style={{marginTop: 70}}
+                                    imageSize={40} startingValue={5}
+                                    showRating
+                                    onFinishRating={(value) => this.setState({rating: value})}   />
+                            <Text style={{color: '#512DA8', alignSelf:'center', fontSize: 10}}>Slide to change Ratings</Text>
+                            <View style={{marginTop: 20}}>
+                                <Input placeholder="Author"
+                                        onChangeText={value => this.setState({author: value})}
+                                        leftIcon={
+                                            <Icon name='user-o' type='font-awesome' style={{marginRight: 10}} />
+                                        } 
+                                />
+                                <Input placeholder="Comment"
+                                        onChangeText={value => this.setState({comment: value})}
+                                        leftIcon={
+                                            <Icon name='comment-o' type='font-awesome' style={{marginRight: 10}} />
+                                        } 
+                                />
+                                <Button 
+                                    title='Submit' 
+                                    color='#522DA8'
+                                    onPress={() => {
+                                        this.props.postComment(dish.id, this.state.rating, this.state.author, this.state.comment);
+                                        this.setState({showModal: false});
+                                    }}
+                                    accessibilityLabel='Learn More' />
+                                <Button 
+                                    style= {{marginTop: 20}}
+                                    title='Cancel' 
+                                    color='#808080'
+                                    onPress={() => this.setState({showModal: false})}
+                                    accessibilityLabel='Learn More' />
+                            </View>
+                        </View>
+                </Modal>
+            )
+        }
         if(dish != null) {
             return(
-                <Card
-                    featuredTitle={dish.name}
-                    image={{uri: baseUrl + dish.image}}
-                    >
-                    <Text style={
-                        {margin: 10}
-                    }>
-                        {dish.description}
-                    </Text>
-                    <View style={{justiftyContent:"center", alignItems:"center"}}>
-                        <View style={{justiftyContent:"center", alignItems:"center", flexDirection: 'row'}}>
-                            <Icon
-                                raised
-                                reverse
-                                name={this.props.favorite ? 'heart' : 'heart-o'}
-                                type='font-awesome'
-                                color='#f50'
-                                onPress={() => this.props.favorite ? alert('Already Fav') : this.props.onPress()} />
-                            <Icon
-                                raised
-                                reverse
-                                name='pencil'
-                                type='font-awesome'
-                                color='#512DA8'
-                                onPress={() => {this.openModal()}} />
-                        </View>
-                    </View>
-                        <Modal
-                        animationType={'slide'}
-                        presentationStyle="fullScreen"
-                        visible={this.state.showModal}
-                        onDismiss={() => {this.setState({showModal: false})}}
-                        onRequestClose={() => {this.setState({showModal: false})}} >
-                            <View style={styles.modal}>
-                                <Rating style={{marginTop: 70}}
-                                        imageSize={40} startingValue={5}
-                                        showRating
-                                        onFinishRating={(value) => this.setState({rating: value})}   />
-                                <Text style={{color: '#512DA8', alignSelf:'center', fontSize: 10}}>Slide to change Ratings</Text>
-                                <View style={{marginTop: 20}}>
-                                    <Input placeholder="Author"
-                                            onChangeText={value => this.setState({author: value})}
-                                            leftIcon={
-                                                <Icon name='user-o' type='font-awesome' style={{marginRight: 10}} />
-                                            } 
-                                    />
-                                    <Input placeholder="Comment"
-                                            onChangeText={value => this.setState({comment: value})}
-                                            leftIcon={
-                                                <Icon name='comment-o' type='font-awesome' style={{marginRight: 10}} />
-                                            } 
-                                    />
-                                    <Button 
-                                        title='Submit' 
-                                        color='#522DA8'
-                                        onPress={() => {
-                                            this.props.postComment(dish.id, this.state.rating, this.state.author, this.state.comment);
-                                            this.setState({showModal: false});
-                                        }}
-                                        accessibilityLabel='Learn More' />
-                                    <Button 
-                                        style= {{marginTop: 20}}
-                                        title='Cancel' 
-                                        color='#808080'
-                                        onPress={() => this.setState({showModal: false})}
-                                        accessibilityLabel='Learn More' />
-                                </View>
+                <Animatable.View animation='fadeInDown' duration={500} delay={100}>
+                    <Card
+                        featuredTitle={dish.name}
+                        image={{uri: baseUrl + dish.image}}
+                        >
+                        <Text style={
+                            {margin: 10}
+                        }>
+                            {dish.description}
+                        </Text>
+                        <View style={{justiftyContent:"center", alignItems:"center"}}>
+                            <View style={{justiftyContent:"center", alignItems:"center", flexDirection: 'row'}}>
+                                <Icon
+                                    raised
+                                    reverse
+                                    name={this.props.favorite ? 'heart' : 'heart-o'}
+                                    type='font-awesome'
+                                    color='#f50'
+                                    onPress={() => this.props.favorite ? alert('Already Fav') : this.props.onPress()} />
+                                <Icon
+                                    raised
+                                    reverse
+                                    name='pencil'
+                                    type='font-awesome'
+                                    color='#512DA8'
+                                    onPress={() => {this.openModal()}} />
                             </View>
-                    </Modal>
-                    
-    
-                </Card>
+                        </View>
+                        <RenderModal />
+                        
+        
+                    </Card>
+                </Animatable.View>
             );
         }else {
             return(
@@ -150,9 +158,11 @@ function RenderComments(props) {
     }
 
     return(
-        <Card title='Comments'>
-            <FlatList data={comments} renderItem={renderCommentItem} keyExtractor={item => item.id.toString()} />
-        </Card>
+        <Animatable.View animation='fadeInUp' duration={500} delay={300}>
+            <Card title='Comments'>
+                <FlatList data={comments} renderItem={renderCommentItem} keyExtractor={item => item.id.toString()} />
+            </Card>
+        </Animatable.View>
     );
 }
 

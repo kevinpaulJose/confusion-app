@@ -4,6 +4,7 @@ import { StyleSheet, ScrollView, FlatList, View } from 'react-native';
 import { connect } from 'react-redux';
 import { baseUrl } from '../shared/baseUrl';
 import { Loading } from './LoadingComponent';
+import * as Animatable from 'react-native-animatable';
 
 const mapStateToProps = state => {
     return {
@@ -60,32 +61,36 @@ class About extends React.Component {
             );
         }else if(this.props.leaders.errMess){
             return(
-                <FlatList 
-                ListHeaderComponent = {
-                    <History />
-                }
-                ListFooterComponent = {
-                    <Card title="Corporate Leadership">
-                        <Text>{this.props.leaders.errMess}</Text>
-                    </Card>
-                } />
-            );
-        }else{
-            return(
-                <FlatList 
+                <Animatable.View animation='fadeInDown' duration={2000} delay={1000}>
+                    <FlatList 
                     ListHeaderComponent = {
-                        <History />
+                            <History />
                     }
                     ListFooterComponent = {
                         <Card title="Corporate Leadership">
-                            <FlatList
-                                data={this.props.leaders.leaders}
-                                renderItem={RenderLeader}
-                                keyExtractor={item => item.id.toString()} />
+                            <Text>{this.props.leaders.errMess}</Text>
                         </Card>
-                    }   
-                    style={styles.background}   
-                />
+                    } />
+                </Animatable.View>
+            );
+        }else{
+            return(
+                <Animatable.View animation='fadeInDown' duration={500} delay={100}>
+                    <FlatList 
+                        ListHeaderComponent = {
+                                <History />
+                        }
+                        ListFooterComponent = {
+                            <Card title="Corporate Leadership">
+                                <FlatList
+                                    data={this.props.leaders.leaders}
+                                    renderItem={RenderLeader}
+                                    keyExtractor={item => item.id.toString()} />
+                            </Card>
+                        }   
+                        style={styles.background}   
+                    />
+                </Animatable.View>
     
             ) 
         }
