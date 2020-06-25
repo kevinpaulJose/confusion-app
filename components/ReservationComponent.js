@@ -3,6 +3,8 @@ import { Text, View, ScrollView, StyleSheet, Picker, Switch, Button, Modal, Aler
 import { Card } from 'react-native-elements';
 import DatePicker from 'react-native-datepicker';
 import * as Animatable from 'react-native-animatable';
+// import * as Notifications from 'expo-notifications';
+// import * as Permissions from 'expo-permissions';
 
 class Reservation extends React.Component {
 
@@ -24,7 +26,10 @@ class Reservation extends React.Component {
             '\nDate and Time: '+this.state.date,
             [
                 {text: 'Cancel', onPress: () => this.resetForm(), style: 'cancel'},
-                {text: 'Ok', onPress: () => this.resetForm()}
+                {text: 'Ok', onPress: () => {
+                    // this.presentLocalNotification(this.state.date);
+                    this.resetForm();
+                } }
             ],
             {cancelable: false}
         )
@@ -39,6 +44,17 @@ class Reservation extends React.Component {
         })
     }
 
+    async obtainNotificationPermission() {
+        let permission = await Permissions.getAsync(Permissions.USER_FACING_NOTIFICATIONS);
+        if(permission.status !== 'granted') {
+            permission = await Permissions.askAsync(Permissions.USER_FACING_NOTIFICATIONS);
+            if(permission.status !== 'granted') {
+                Alert.alert('Permission not granted to show notification');
+            }
+        }
+        return permission;
+    }
+
     // closeModal() {
     //     this.setState({
     //         showModal: false
@@ -49,6 +65,22 @@ class Reservation extends React.Component {
     //         showModal: true
     //     })
     // }
+
+
+    async presentLocalNotification(date) {
+        await this.obtainNotificationPermission();
+        Notifications.presentNotificationAsync({
+            title: 'Your Reservation',
+            body: 'Reservation for '+date+' requested',
+            ios: {
+                sound: true
+            },
+            android: {
+                sound: true,
+                vibrate: true
+            }
+        });
+    }
 
     render() {
         return(
