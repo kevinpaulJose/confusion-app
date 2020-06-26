@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import { Platform, Image, StyleSheet, View, Text, ScrollView } from 'react-native';
+import { Platform, Image, StyleSheet, View, Text, ScrollView, ToastAndroid } from 'react-native';
 import { NavigationContainer, DrawerActions } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator, DrawerItemList, DrawerContentScrollView } from '@react-navigation/drawer';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import { Icon } from 'react-native-elements';
+import NetInfo from "@react-native-community/netinfo";
 
 import Menu from './MenuComponent';
 import DishDetail from './DishDetailComponent';
@@ -342,7 +343,39 @@ class Main extends Component {
         this.props.fetchComments();
         this.props.fetchPromos();
         this.props.fetchLeaders();
+
+        NetInfo.fetch().then(state => {
+            console.log("Connection type", state.type);
+            console.log("Is connected?", state.isConnected);
+          });
+        // NetInfo.getConnectionInfo()
+        //     .then((connectionInfo) => {
+        //         ToastAndroid.show('Initial Network : '+connectionInfo.type+', effective Type: '+connectionInfo.effectiveType,
+        //         ToastAndroid.LONG)
+        //     })
+        // NetInfo.addEventListener('connectionChange', this.handleConnectivityChange);
     }
+
+    // componentWillUnmount() {
+    //     unsubscribe();
+    // }
+    // handleConnectivityChange = (connectionInfo) => {
+    //     switch(connectionInfo.type){
+    //         case 'none': 
+    //             ToastAndroid.show('You are now offline !', ToastAndroid.LONG);
+    //             break;
+    //         case 'wifi':
+    //             ToastAndroid.show('You are now WiFi !', ToastAndroid.LONG);
+    //             break;
+    //         case 'cellular':
+    //             ToastAndroid.show('You are now Cellular !', ToastAndroid.LONG);
+    //             break;
+    //         case 'unknown':
+
+    //         default:
+    //             break;
+    //     }
+    // }
 
   render() {
  

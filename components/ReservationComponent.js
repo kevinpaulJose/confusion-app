@@ -1,10 +1,10 @@
 import React from 'react';
-import { Text, View, ScrollView, StyleSheet, Picker, Switch, Button, Modal, Alert } from 'react-native';
-import { Card } from 'react-native-elements';
+import { Text, View, ScrollView, StyleSheet, Picker, Switch, Button, Alert, Platform } from 'react-native';
 import DatePicker from 'react-native-datepicker';
 import * as Animatable from 'react-native-animatable';
 // import * as Notifications from 'expo-notifications';
-// import * as Permissions from 'expo-permissions';
+import * as Permissions from 'expo-permissions';
+import * as Calendar from 'expo-calendar';
 
 class Reservation extends React.Component {
 
@@ -17,6 +17,60 @@ class Reservation extends React.Component {
             showModal: false
         }
     }
+    calenderId = '';
+    
+
+
+    async obtainCalendarPermission() {
+        await Permissions.askAsync(Permissions.CALENDAR);
+    }
+
+
+    async addReservationToCalendar(date) {
+        
+        await this.obtainCalendarPermission();
+        
+        let dateCurr = Date.parse(date);
+        let endDate = new Date(dateCurr + 3600 * 2 * 1000);
+        
+        const defaultCalendarSource=Platform.OS==='ios'?await this.getDefaultCalendarSource()
+        : { isLocalAccount: true, name: 'Expo Calendar' };
+        
+        const defaultCalendarId=await Calendar.createCalendarAsync({
+            title: 'Your Reservation at Con Fusion',
+            color: 'blue',
+            entityType: Calendar.EntityTypes.EVENT,
+            sourceId: defaultCalendarSource.id,
+            source : defaultCalendarSource,
+            name: 'internalCalendarName',
+            ownerAccount: 'personal',
+            accessLevel: Calendar.CalendarAccessLevel.OWNER,
+        });
+
+        await Calendar.createEventAsync(defaultCalendarId, {
+            title: 'Con Fusion Table Reservation',
+            startDate: dateCurr,
+            endDate: endDate,
+            timeZone: 'Asia/Hong_Kong',
+            location: '121, Clear Water Bay Road, Clear Water Bay, Kowloon, Hong Kong'
+        });
+    }
+
+    // async test() {
+    //     const { status } = await Calendar.requestCalendarPermissionsAsync();
+    //   if (status === 'granted') {
+    //     const calendars = await Calendar.getCalendarsAsync();
+    //     console.log('Here are all your calendars:');
+    //     console.log({ calendars });
+    //   }
+    // }
+
+    
+      async getDefaultCalendarSource() {
+        const calendars = await Calendar.getCalendarsAsync();
+        const defaultCalendars = calendars.filter(each => each.source.name === 'iCloud');
+        return defaultCalendars[0].source;
+      }
 
     handleReservation() {
         // this.openModal();
@@ -28,6 +82,7 @@ class Reservation extends React.Component {
                 {text: 'Cancel', onPress: () => this.resetForm(), style: 'cancel'},
                 {text: 'Ok', onPress: () => {
                     // this.presentLocalNotification(this.state.date);
+                    this.addReservationToCalendar(this.state.date);
                     this.resetForm();
                 } }
             ],
