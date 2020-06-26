@@ -41,11 +41,11 @@ class Contact extends React.Component {
                             Email:confusion@food.net
                         </Text>
                         <Button
-                        title="Send Email"
-                        buttonStyle={{backgroundColor: "#512DA8"}}
-                        icon={<Icon name='envelope-o' type='font-awesome' color='white' />}
-                        onPress={this.sendMail}
-                        />
+                            title="Send Email"
+                            buttonStyle={{backgroundColor: "#512DA8"}}
+                            icon={<Icon name='envelope-o' type='font-awesome' color='white' />}
+                            onPress={this.sendMail}
+                            />
     
                     </Card>  
                 </Animatable.View>      
